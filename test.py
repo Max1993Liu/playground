@@ -5,7 +5,6 @@ from playground.strategy import Strategy
 
 
 
-
 class TestState(State):
 
 	def __init__(self, order):

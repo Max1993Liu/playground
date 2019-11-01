@@ -29,6 +29,10 @@ class Simulator:
             environ["state_info"] = env  # state_info is a tuple
             environ["reward_history"] = self.reward_history
             environ["step"] = self.n_step
+            # temporary fix to add order_field (usually the date) into the environment
+            if hasattr(self.selector, 'order_field'):
+            	field_name = getattr(self.selector, 'order_field')
+            	environ['order_field'] = getattr(cur_state, field_name)
 
             # evaluate the output
             predicted_state = self.strategy.predict(environ)
