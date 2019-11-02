@@ -21,13 +21,20 @@ class RandomSelector(Selector):
 	def __init__(self, states, random_state=None):
 		self.states = states
 		random.shuffle(self.states, random=random_state)
+		self.cursor = 0
 
 	def select(self, loc=None):
-		return self.states.pop()
+		return self.states[self.cursor]
 
 	def __iter__(self):
-		while self.states:
-			yield self.select()
+		while 1:
+			if self.cursor < len(self.states):
+				yield self.select()
+				self.cursor += 1
+			else:
+				# allow multiple iterations
+				self.cursor = 0
+				break
 
 
 class StreamSelector(Selector):

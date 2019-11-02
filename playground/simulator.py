@@ -23,7 +23,14 @@ class Simulator:
     def profit(self):
         return self.reward - self.cost
 
+    def reset(self):
+        self.reward_history = list()
+        self.cost_history = list()
+        self.n_step = 0
+        self.decision_history = list()
+
     def simulate(self, steps=None):
+        self.reset()
         steps = steps or math.inf
 
         for s in self.selector:
