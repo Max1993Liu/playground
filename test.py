@@ -20,7 +20,7 @@ class TestState(State):
 class DummyStrategy(Strategy):
 
 	def predict(self, environ):
-		return environ['state_info'][0][-1]
+		return environ['state_info'][0][-1], 2
 
 
 states = [TestState(i) for i in range(1000)]

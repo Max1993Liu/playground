@@ -2,11 +2,10 @@ import math
 
 
 class Simulator:
-    def __init__(self, selector, strategy, cost_per_state=2):
+    def __init__(self, selector, strategy):
         self.selector = selector
         self.strategy = strategy
-        self.cost_per_state = cost_per_state
-
+        
         self.reward_history = list()
         self.cost_history = list()
         self.n_step = 0
@@ -35,11 +34,17 @@ class Simulator:
             	environ['order_field'] = getattr(cur_state, field_name)
 
             # evaluate the output
-            predicted_state = self.strategy.predict(environ)
-            reward = cur_state.check_result(predicted_state)
+            decision = self.strategy.predict(environ)
+            if decision is None:
+                # no action is taken at this step
+                predicted_state, reward, cost = None, 0, 0
+            else:
+                predicted_state, cost = decision
+                reward = cur_state.check_result(predicted_state)
+
             self.decision_history.append(predicted_state)
             self.reward_history.append(reward)
-            self.cost_history.append(self.cost_per_state)
+            self.cost_history.append(cost)
 
             print(
                 f"Step {self.n_step}: <Reward>: {reward} <Profit>: {sum(self.reward_history) - sum(self.cost_history)} <Decision>: {predicted_state} <Actual>: {cur_state}"
