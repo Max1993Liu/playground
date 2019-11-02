@@ -2,6 +2,7 @@ from collections import Counter
 import random
 import pickle as pkl
 import datetime
+import numpy as np
 
 from playground.simulator import Simulator
 from playground.state import State
@@ -111,24 +112,49 @@ class FrequencyBasedStrategy(Strategy):
 
 	def __init__(self, 
 				lookback_period=10,
-				by_position=False):
+				red_block=None):
 		self.lookback_period = lookback_period
-		self.by_position = by_position
+		if isinstance(red_block, int):
+			if red_block == 6:
+				red_block = [[0], [1], [2], [3], [4], [5]]
+			elif red_block == 3:
+				red_block = [[0, 1], [2, 3], [4, 5]]
+			elif red_block == 2:
+				red_block = [[0, 1, 2], [3, 4, 5]]
+		self.red_block = red_block or [[0, 1, 2, 3, 4, 5]]
 
 	def predict(self, env):
 		cur_date = env['order_field']
 		prev_states = env['state_info'][0]  # state_info is a tuple
 		prev_states = prev_states[-self.lookback_period:]
 
-		
+		hist_blue_balls = [i.blue_ball for i in prev_states]
+		pred_blue_ball = self.find_most_frequent(hist_blue_balls)[0][0]
 
+		hist_red_balls = np.array([i.red_balls for i in prev_states])  # shape (lookback_period, 6)
+
+		pred_red_balls = []
+		for block in self.red_block:
+			block_size = len(block)
+			pred_block = self.find_most_frequent(hist_red_balls[:, block], n=block_size)
+			pred_red_balls.extend([i[0] for i in pred_block])
+
+		return SSQ.from_prediction(date=cur_date, red_balls=pred_red_balls, blue_ball=pred_blue_ball), COST_PER_TICKET
+
+
+	@staticmethod
+	def find_most_frequent(x, n=1):
+		if hasattr(x, 'ndim') and x.ndim > 1:
+			x = x.flatten()
+		return Counter(x).most_common(n)
 
 
 if __name__ == '__main__':
-	states = load_history(start_date='2019-01-01')
-	stream_selector = StreamSelector(states, order_field='date')
-	strategy = RandomSelectingStrategy()
+	states = load_history(start_date='2016-01-01')
+	stream_selector = StreamWindowSelector(states, window_size=20, order_field='date')
+	# strategy = RandomSelectingStrategy()
+	strategy = FrequencyBasedStrategy(lookback_period=10, red_block=3)
 
 	simulator = Simulator(stream_selector, strategy)
-	simulator.simulate()
+	simulator.simulate(steps=None)
 

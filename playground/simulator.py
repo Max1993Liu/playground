@@ -11,6 +11,18 @@ class Simulator:
         self.n_step = 0
         self.decision_history = list()
 
+    @property
+    def reward(self):
+        return sum(self.reward_history)
+    
+    @property
+    def cost(self):
+        return sum(self.cost_history)
+
+    @property
+    def profit(self):
+        return self.reward - self.cost
+
     def simulate(self, steps=None):
         steps = steps or math.inf
 
@@ -39,6 +51,9 @@ class Simulator:
                 # no action is taken at this step
                 predicted_state, reward, cost = None, 0, 0
             else:
+                # a better error message
+                if not isinstance(decision, (tuple, list)):
+                    raise ValueError('The strategy should return a tuple of (action, cost).')
                 predicted_state, cost = decision
                 reward = cur_state.check_result(predicted_state)
 
@@ -47,7 +62,7 @@ class Simulator:
             self.cost_history.append(cost)
 
             print(
-                f"Step {self.n_step}: <Round Reward>: {reward} <Total Reward>: {sum(self.reward_history)} <Profit>: {sum(self.reward_history) - sum(self.cost_history)}" 
+                f"Step {self.n_step}: <Round Reward>: {reward} <Total Reward>: {self.reward} <Profit>: {self.profit}" 
             )
 
             print(
@@ -58,3 +73,5 @@ class Simulator:
 
             if self.n_step >= steps:
                 break
+
+        print(f"Total steps: {self.n_step} <Profit>: {self.profit} <Profit per step>: {self.profit / self.n_step}")
