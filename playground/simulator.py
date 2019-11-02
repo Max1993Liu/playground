@@ -47,8 +47,14 @@ class Simulator:
             self.cost_history.append(cost)
 
             print(
-                f"Step {self.n_step}: <Reward>: {reward} <Profit>: {sum(self.reward_history) - sum(self.cost_history)} <Decision>: {predicted_state} <Actual>: {cur_state}"
+                f"Step {self.n_step}: <Round Reward>: {reward} <Total Reward>: {sum(self.reward_history)} <Profit>: {sum(self.reward_history) - sum(self.cost_history)}" 
             )
+
+            print(
+                f"Step {self.n_step}: <Decision>: {predicted_state} <Actual>: {cur_state}"
+            )
+
+            print('=' * 128)
 
             if self.n_step >= steps:
                 break

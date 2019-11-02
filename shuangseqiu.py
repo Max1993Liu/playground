@@ -64,7 +64,9 @@ class SSQ(State):
 			return self.price_money[5]
 		elif n_match_red in (0, 1, 2) and is_match_blue:
 			# 六等奖
-			return self.price_money[6]	
+			return self.price_money[6]
+		else:
+			return 0
 
 	def number_of_matches(self, a, b):
 		return len(set(a) & set(b))
@@ -96,6 +98,14 @@ def load_history(data_path=None, start_date=None, end_date=None):
 # Implementing some basic strategy ######
 #########################################
 
+COST_PER_TICKET = 2
+
+class RandomSelectingStrategy(Strategy):
+
+	def predict(self, env):
+		cur_date = env['order_field']
+		return SSQ.random(cur_date), COST_PER_TICKET
+
 
 class FrequencyBasedStrategy(Strategy):
 
@@ -111,4 +121,14 @@ class FrequencyBasedStrategy(Strategy):
 		prev_states = prev_states[-self.lookback_period:]
 
 		
+
+
+
+if __name__ == '__main__':
+	states = load_history(start_date='2019-01-01')
+	stream_selector = StreamSelector(states, order_field='date')
+	strategy = RandomSelectingStrategy()
+
+	simulator = Simulator(stream_selector, strategy)
+	simulator.simulate()
 
