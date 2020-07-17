@@ -77,8 +77,6 @@ def download_shuangseqiu(save_dir=None, use_default_encoding=False):
 	soup = BeautifulSoup(page_content, 'lxml')
 
 	all_urls = [i.get('href') for i in soup.find_all('a') if i.get('href', '').startswith('http://kaijiang.500.com/shtml/ssq/')]
-	print(all_urls)
-	raise
 
 	res = []
 	for url in tqdm(all_urls):
@@ -99,13 +97,13 @@ def download_shuangseqiu(save_dir=None, use_default_encoding=False):
 
 
 if __name__ == '__main__':
-	import argparse
+	# import argparse
 
-	parser = argparse.ArgumentParser()
-	parser.add_argument('which', help='Which game data to download.')
-	args = parser.parse_args()
+	# parser = argparse.ArgumentParser()
+	# parser.add_argument('which', help='Which game data to download.')
+	# args = parser.parse_args()
 
-	if args.which.lower() == 'shuangseqiu':
-		download_shuangseqiu()
+	# if args.which.lower() == 'shuangseqiu':
+	# 	download_shuangseqiu()
 
 	download_shuangseqiu()
