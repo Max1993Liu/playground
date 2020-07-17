@@ -29,4 +29,4 @@ stream_selector = StreamWindowSelector(states, order_field='order', window_size=
 strategy = DummyStrategy()
 
 simulator = Simulator(stream_selector, strategy)
-simulator.simulate(steps=5)
+simulator.simulate(steps=1000)

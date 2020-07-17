@@ -14,7 +14,7 @@ def fetch_shuangseqiu_result(url, use_default_encoding=False):
 	if use_default_encoding:
 		page_content = page.content.decode(page.apparent_encoding)
 	else:
-		page_content = page.content.decode('gbk')
+		page_content = page.content.decode('GB18030')
 		
 	soup = BeautifulSoup(page_content, 'lxml')
 
@@ -36,6 +36,10 @@ def fetch_shuangseqiu_result(url, use_default_encoding=False):
 	# read_html doesn't work with bs4.Tag
 	price: pd.DataFrame = pd.read_html(str(price))[0]
 
+	# 新的页面里有额外信息需要剔除
+	if price.shape[0] > 10:
+		price = price.iloc[6: ].reset_index(drop=True)
+
 	price_money, price_count = {}, {}
 	for row_id, row in price.iterrows():
 		# if row[0].endswith('等奖') and not row[0].startswith('幸运'):
@@ -52,7 +56,7 @@ def fetch_shuangseqiu_result(url, use_default_encoding=False):
 
 
 
-def download_shuangseqiu(save_dir=None):
+def download_shuangseqiu(save_dir=None, use_default_encoding=False):
 	try:
 		from tqdm import tqdm
 	except:
@@ -73,15 +77,18 @@ def download_shuangseqiu(save_dir=None):
 	soup = BeautifulSoup(page_content, 'lxml')
 
 	all_urls = [i.get('href') for i in soup.find_all('a') if i.get('href', '').startswith('http://kaijiang.500.com/shtml/ssq/')]
+	print(all_urls)
+	raise
 
 	res = []
 	for url in tqdm(all_urls):
 		try:
-			res.append(fetch_shuangseqiu_result(url, use_default_encoding=False))
+			res.append(fetch_shuangseqiu_result(url, use_default_encoding=use_default_encoding))
 		except Exception as e:
 			try:
 				res.append(fetch_shuangseqiu_result(url, use_default_encoding=True))
-			except:
+			except Exception as e:
+				print(e)
 				print('Failed: {}'.format(url))
 
 	with open(save_path, 'wb') as f:
@@ -100,4 +107,5 @@ if __name__ == '__main__':
 
 	if args.which.lower() == 'shuangseqiu':
 		download_shuangseqiu()
-	# print(fetch_shuangseqiu_result('http://kaijiang.500.com/shtml/ssq/19124.shtml', use_default_encoding=False))
+
+	download_shuangseqiu()

@@ -151,10 +151,12 @@ class FrequencyBasedStrategy(Strategy):
 
 if __name__ == '__main__':
 	states = load_history(start_date='2016-01-01')
-	stream_selector = StreamWindowSelector(states, window_size=20, order_field='date')
-	# strategy = RandomSelectingStrategy()
-	strategy = FrequencyBasedStrategy(lookback_period=10, red_block=3)
+	
+	# stream_selector = StreamWindowSelector(states, window_size=20, order_field='date')
+	# # strategy = RandomSelectingStrategy()
+	# strategy = FrequencyBasedStrategy(lookback_period=10, red_block=3)
 
-	simulator = Simulator(stream_selector, strategy)
-	simulator.simulate(steps=None)
+	# simulator = Simulator(stream_selector, strategy)
+	# simulator.simulate(steps=None)
 
+	print(states)
