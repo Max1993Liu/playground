@@ -8,6 +8,7 @@ from playground.simulator import Simulator
 from playground.state import State
 from playground.selector import StreamWindowSelector, StreamSelector
 from playground.strategy import Strategy
+from playground.search import grid_search
 
 
 
@@ -152,11 +153,16 @@ class FrequencyBasedStrategy(Strategy):
 if __name__ == '__main__':
 	states = load_history(start_date='2016-01-01')
 	
-	# stream_selector = StreamWindowSelector(states, window_size=20, order_field='date')
-	# # strategy = RandomSelectingStrategy()
-	# strategy = FrequencyBasedStrategy(lookback_period=10, red_block=3)
+	stream_selector = StreamWindowSelector(states, window_size=20, order_field='date')
+	# strategy = RandomSelectingStrategy()
+	strategy = FrequencyBasedStrategy(lookback_period=5, red_block=None)
 
-	# simulator = Simulator(stream_selector, strategy)
-	# simulator.simulate(steps=None)
+	simulator = Simulator(stream_selector, strategy)
+	simulator.simulate(steps=None)
 
-	print(states)
+	# params = {'lookback_period': np.arange(5, 100),
+	# 		 'red_block': [None, 2, 3, 6]}
+	
+	# best_profit, best_param = grid_search(stream_selector, FrequencyBasedStrategy, params, steps=None)
+	# print(best_profit)
+	# print(best_param)

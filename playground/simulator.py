@@ -2,9 +2,10 @@ import math
 
 
 class Simulator:
-    def __init__(self, selector, strategy):
+    def __init__(self, selector, strategy, verbose=True):
         self.selector = selector
         self.strategy = strategy
+        self.verbose = verbose
         
         self.reward_history = list()
         self.cost_history = list()
@@ -68,17 +69,19 @@ class Simulator:
             self.reward_history.append(reward)
             self.cost_history.append(cost)
 
-            print(
-                f"Step {self.n_step}: <Round Reward>: {reward} <Total Reward>: {self.reward} <Profit>: {self.profit}" 
-            )
+            if self.verbose:
+                print(
+                    f"Step {self.n_step}: <Round Reward>: {reward} <Total Reward>: {self.reward} <Profit>: {self.profit}" 
+                )
 
-            print(
-                f"Step {self.n_step}: <Decision>: {predicted_state} <Actual>: {cur_state}"
-            )
+                print(
+                    f"Step {self.n_step}: <Decision>: {predicted_state} <Actual>: {cur_state}"
+                )
 
-            print('=' * 128)
+                print('=' * 128)
 
             if self.n_step >= steps:
                 break
 
-        print(f"Total steps: {self.n_step} <Profit>: {self.profit} <Profit per step>: {self.profit / self.n_step}")
+        if self.verbose:
+            print(f"Total steps: {self.n_step} <Profit>: {self.profit} <Profit per step>: {self.profit / self.n_step} <Max Reward>: {max(self.reward_history)}")
